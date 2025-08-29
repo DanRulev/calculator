@@ -22,8 +22,8 @@ A simple yet powerful calculator built in Go that supports **arbitrarily large n
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/your-username/calculator-go.git
-cd calculator-go
+git clone https://github.com/DanRulev/calculator.git
+cd calculator
 ```
 
 ### 2. Download dependencies
