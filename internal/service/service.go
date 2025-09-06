@@ -18,6 +18,7 @@ const (
 	TIMES  = "TIMES"  // *
 	DIVIDE = "DIVIDE" // /
 	POWER  = "POWER"  // ^
+	SQRT   = "SQRT"   // sqrt
 	FACTOR = "FACTOR" // !
 	LPAREN = "LPAREN" // (
 	RPAREN = "RPAREN" // )
@@ -75,7 +76,12 @@ func (l *Lexer) tokenize() error {
 		case ch == ' ' || ch == '\t':
 			l.pos++
 		default:
-			return fmt.Errorf("invalid character: '%c'", ch)
+			if ch == 's' && l.pos+3 < len(l.input) && l.input[l.pos:l.pos+4] == "sqrt" {
+				tokens = append(tokens, Token{Type: SQRT, Value: "sqrt"})
+				l.pos += 4
+			} else {
+				return fmt.Errorf("invalid character: '%c'", ch)
+			}
 		}
 	}
 	tokens = append(tokens, Token{Type: EOF, Value: ""})
@@ -96,11 +102,14 @@ type Parser struct {
 	current Token
 }
 
-func NewParser(input string) *Parser {
-	l := NewLexer(input)
+func NewParser(input string) (*Parser, error) {
+	l := &Lexer{input: input}
+	if err := l.tokenize(); err != nil {
+		return nil, err
+	}
 	p := &Parser{lexer: l}
 	p.nextToken()
-	return p
+	return p, nil
 }
 
 func (p *Parser) nextToken() {
@@ -155,7 +164,7 @@ func (p *Parser) parseTerm() (*big.Float, error) {
 				return nil, err
 			}
 			if right.Cmp(big.NewFloat(0)) == 0 {
-				panic("integer division by zero")
+				return nil, fmt.Errorf("division by zero")
 			}
 			result = new(big.Float).Quo(result, right)
 		}
@@ -223,9 +232,66 @@ func (p *Parser) parsePrimary() (*big.Float, error) {
 		}
 		p.nextToken()
 		return result, nil
+	} else if p.current.Type == SQRT {
+		return p.parseSqrt()
 	} else {
 		return nil, fmt.Errorf("unexpected token: %s", p.current.Type)
 	}
+}
+
+func (p *Parser) parseSqrt() (*big.Float, error) {
+	p.nextToken() // consume 'sqrt'
+
+	if p.current.Type != LPAREN {
+		return nil, fmt.Errorf("expected '(' after 'sqrt'")
+	}
+
+	p.nextToken() // consume '('
+	expr, err := p.parseExpression()
+	if err != nil {
+		return nil, err
+	}
+
+	if p.current.Type != RPAREN {
+		return nil, fmt.Errorf("expecting ')' after sqrt argument")
+	}
+	p.nextToken() // consume ')'
+
+	if expr.Cmp(big.NewFloat(0)) < 0 {
+		return nil, fmt.Errorf("square root of negative number is not defined")
+	}
+
+	return sqrtFloat(expr)
+}
+
+func sqrtFloat(f *big.Float) (*big.Float, error) {
+	zero := big.NewFloat(0).SetPrec(Precision)
+	if f.Cmp(zero) == 0 {
+		return zero, nil
+	}
+
+	guess := new(big.Float).Set(f)
+	guess.Quo(guess, big.NewFloat(2).SetPrec(Precision))
+
+	two := big.NewFloat(2).SetPrec(Precision)
+	tolerance := big.NewFloat(1e-200).SetPrec(Precision)
+
+	for {
+		invGuess := new(big.Float).Quo(f, guess)
+		newGuess := new(big.Float).Add(guess, invGuess)
+		newGuess.Quo(newGuess, two)
+
+		diff := new(big.Float).Sub(newGuess, guess)
+		diff.Abs(diff)
+
+		if diff.Cmp(tolerance) <= 0 {
+			break
+		}
+
+		guess.Set(newGuess)
+	}
+
+	return guess, nil
 }
 
 func floatPow(base, exp *big.Float) (*big.Float, error) {
@@ -286,7 +352,10 @@ func NewCalcService() *CalcService {
 	return &CalcService{}
 }
 func (c *CalcService) Evaluate(expr string) (*big.Float, error) {
-	parser := NewParser(strings.TrimSpace(expr))
+	parser, err := NewParser(strings.TrimSpace(expr))
+	if err != nil {
+		return nil, err
+	}
 	result, err := parser.parseExpression()
 	if err != nil {
 		return nil, err

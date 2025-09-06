@@ -75,7 +75,39 @@ func TestCalcService_Evaluate(t *testing.T) {
 			want:    big.NewFloat(29.75),
 			wantErr: false,
 		},
-
+		{
+			name:    "sqrt basic",
+			args:    args{expr: "sqrt(9)"},
+			want:    big.NewFloat(3),
+			wantErr: false,
+		},
+		{
+			name:    "sqrt of zero",
+			args:    args{expr: "sqrt(0)"},
+			want:    big.NewFloat(0),
+			wantErr: false,
+		},
+		{
+			name:    "sqrt complex",
+			args:    args{expr: "sqrt(2 + 7)"},
+			want:    big.NewFloat(3),
+			wantErr: false,
+		},
+		{
+			name:       "sqrt negative",
+			args:       args{expr: "sqrt(-1)"},
+			wantErr:    true,
+			wantErrMsg: "square root of negative number is not defined",
+		},
+		{
+			name: "sqrt decimal",
+			args: args{expr: "sqrt(2.25)"},
+			want: func() *big.Float {
+				f, _ := big.NewFloat(0).SetString("1.5")
+				return f
+			}(),
+			wantErr: false,
+		},
 		{
 			name:       "division by zero",
 			args:       args{expr: "10 / 0"},

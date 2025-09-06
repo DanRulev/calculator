@@ -106,7 +106,8 @@
     <button class="clear" onclick="clearDisplay()">C</button>
     <button class="func" onclick="appendOperator('(')">(</button>
     <button class="func" onclick="appendOperator(')')">)</button>
-    <button class="func" colspan="2" style="grid-column: span 2;" onclick="backspace()">←</button>
+    <button class="func" onclick="sqrt()">√</button>
+    <button class="func" onclick="backspace()">←</button>
 
     <!-- Row 2 -->
     <button class="num" onclick="appendNumber('7')">7</button>
@@ -194,58 +195,31 @@
   resultDiv.textContent = '';
 }
 
-  // x² — возведение в квадрат
   function square() {
-    if (isSingleNumber(displayValue)) {
-      const num = parseFloat(eval(displayValue));
-      if (!isNaN(num)) {
-        const result = num * num;
-        displayValue = result.toString();
-        updateDisplay();
-        resultDiv.innerHTML = `<strong>= ${result}</strong>`;
-      }
-    } else {
-      displayValue = `(${displayValue})**2`;
-      updateDisplay();
-    }
+    displayValue = `(${displayValue})^2`;
+    updateDisplay();
   }
 
-  // x! — факториал
+  function sqrt() {
+    displayValue = `sqrt(${displayValue})`;
+    updateDisplay();
+  }
+
   function factorial() {
-    if (isSingleNumber(displayValue)) {
-      const n = parseInt(displayValue);
-      if (n >= 0 && n <= 170 && n === parseFloat(displayValue)) {
-        const fact = calculateFactorial(n);
-        displayValue = fact.toString();
-        updateDisplay();
-        resultDiv.innerHTML = `<strong>= ${fact}</strong>`;
-      } else {
-        resultDiv.innerHTML = `<span style="color: #ff9500">Ошибка: 0 ≤ n ≤ 170, целое</span>`;
-      }
-    } else {
-      displayValue = `(${displayValue})!`;
-      updateDisplay();
-    }
+    displayValue = `(${displayValue})!`;
+    updateDisplay();
   }
 
   function isSingleNumber(str) {
-    return /^-?\d+(\.\d+)?$/.test(str.trim()) && isFinite(str);
+    const trimmed = str.trim();
+    return /^-?\d+(\.\d+)?$/.test(trimmed) && !isNaN(parseFloat(trimmed)) && isFinite(trimmed);
   }
 
-  function calculateFactorial(n) {
-    if (n === 0 || n === 1) return 1;
-    let result = 1;
-    for (let i = 2; i <= n; i++) {
-      result *= i;
-    }
-    return result;
-  }
 
   async function calculate() {
     let expr = displayValue
       .replace(/÷/g, '/')
       .replace(/×/g, '*')
-      .replace(/\*\*/g, '**'); // оставляем как есть
 
     if (!expr.trim()) return;
 
@@ -270,7 +244,6 @@
     }
   }
 
-  // Клавиатурный ввод
   document.addEventListener('keydown', e => {
     if (/[0-9]/.test(e.key)) {
       e.preventDefault();
@@ -295,6 +268,9 @@
     } else if (e.key === '!') {
       e.preventDefault();
       factorial();
+    } else if (e.key === 'r' || e.key === 'R') {
+      e.preventDefault();
+      sqrt();
     }
   });
 </script>
