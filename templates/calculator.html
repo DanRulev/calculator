@@ -1,267 +1,303 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>🔢 Big Number Calculator</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <title>Калькулятор</title>
   <style>
-    :root {
-      --bg: #f8f9fa;
-      --card-bg: #ffffff;
-      --text: #212529;
-      --muted: #6c757d;
-      --border: #dee2e6;
-      --primary: #007bff;
-      --primary-hover: #0056b3;
-      --error: #dc3545;
-      --shadow: 0 4px 12px rgba(0,0,0,0.1);
-      --radius: 12px;
-      --transition: all 0.2s ease;
-      --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    }
-
-    .dark-mode {
-      --bg: #121212;
-      --card-bg: #1e1e1e;
-      --text: #e0e0e0;
-      --muted: #9e9e9e;
-      --border: #333;
-      --primary: #4dabf7;
-      --primary-hover: #3b8eda;
-      --error: #ef5350;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
     body {
-      font-family: var(--font);
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.6;
-      transition: var(--transition);
-      padding: 20px;
-      min-height: 100vh;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background-color: #f0f2f5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
     }
-
-    .container {
-      max-width: 500px;
-      margin: 0 auto;
-      padding: 30px;
-      background: var(--card-bg);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      transition: var(--transition);
+    .calculator {
+      background: #1e1e1e;
+      border-radius: 18px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      width: 400px;
+      overflow: hidden;
     }
-
-    h1 {
-      text-align: center;
-      margin-bottom: 30px;
-      font-weight: 700;
-      font-size: 1.8rem;
-      color: var(--primary);
-    }
-
-    .theme-toggle {
-      display: block;
-      width: 40px;
-      height: 20px;
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      cursor: pointer;
-      user-select: none;
-      font-size: 0.9rem;
-      color: var(--muted);
-    }
-
-    label {
-      display: block;
-      margin: 16px 0 8px;
-      font-weight: 500;
-      color: var(--text);
-    }
-
-    input[type="text"], select {
-      width: 100%;
-      padding: 14px;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      background: var(--card-bg);
-      color: var(--text);
-      font-size: 16px;
-      transition: var(--transition);
-    }
-
-    input[type="text"]:focus, select:focus {
-      outline: none;
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
-    }
-
-    button {
-      background: var(--primary);
+    .display {
+      background: #000;
       color: white;
-      padding: 14px 24px;
+      font-size: 40px;
+      padding: 24px;
+      text-align: right;
+      height: 80px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+    .buttons {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+      padding: 15px;
+    }
+    button {
       border: none;
-      border-radius: 8px;
+      border-radius: 10px;
+      padding: 16px 0;
+      font-size: 16px;
       cursor: pointer;
-      font-size: 16px;
-      font-weight: 600;
-      margin-top: 20px;
-      width: 100%;
-      transition: var(--transition);
+      outline: none;
     }
-
-    button:hover {
-      background: var(--primary-hover);
-      transform: translateY(-1px);
+    .num {
+      background: rgb(70, 79, 81);
+      color: white;
     }
-
-    .output {
-      margin-top: 24px;
-      padding: 18px;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      font-family: 'Courier New', monospace;
-      font-size: 16px;
-      word-break: break-all;
-      color: var(--text);
-      transition: var(--transition);
-      animation: fadeIn 0.3s ease;
+    .num:hover {
+      background: #634545;
     }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to   { opacity: 1; transform: translateY(0); }
+    .op {
+      background: #ff9500;
+      color: white;
+      font-weight: bold;
     }
-
-    .error {
-      color: var(--error) !important;
-      border-color: var(--error);
+    .op:hover {
+      background: #997b52;
     }
-
-    footer {
-      text-align: center;
-      margin-top: 30px;
-      color: var(--muted);
-      font-size: 0.9rem;
+    .func {
+      background: #b0b6b7;
+      color: rgb(0, 0, 0);
+      font-weight: bold;
+      font-size: 15px;
     }
-
-    @media (max-width: 500px) {
-      .container {
-        padding: 20px;
-      }
-      h1 {
-        font-size: 1.5rem;
-      }
+    .func:hover {
+      background: #e9e5e5;
+    }
+    .clear {
+      background: #fff3f3;
+      color: black;
+      font-weight: bold;
+    }
+    .clear:hover {
+      background: #e0e0e0;
+    }
+    .eq {
+      background: #f48e01;
+      color: white;
+      font-weight: bold;
+      grid-column: span 2;
+    }
+    .zero {
+      grid-column: span 2;
+    }
+    .result {
+      color: #00ff40;
+      font-size: 18px;
+      margin-top: 10px;
+      text-align: right;
+      padding: 0 15px 15px;
     }
   </style>
 </head>
 <body>
-  <div class="theme-toggle" onclick="toggleTheme()">🌓</div>
 
-  <div class="container">
-    <h1>Big Number Calculator</h1>
-    <form id="calcForm">
-      <label for="num1">First Number</label>
-      <input type="text" id="num1" name="num1" placeholder="e.g. 1000!" required autofocus />
+<div class="calculator">
+  <div class="display" id="display">0</div>
 
-      <label for="operator">Operation</label>
-      <select id="operator" name="operator" required>
-        <option value="">-- Select Operation --</option>
-        <option value="+">➕ Addition (+)</option>
-        <option value="-">➖ Subtraction (-)</option>
-        <option value="*">✖️ Multiplication (*)</option>
-        <option value="/">➗ Division (/)</option>
-        <option value="^">📈 Power (^)</option>
-        <option value="!">❗ Factorial (!)</option>
-        <option value="sqrt">🔍 Square Root (√)</option>
-      </select>
+  <div class="buttons">
+    <!-- Row 1 -->
+    <button class="clear" onclick="clearDisplay()">C</button>
+    <button class="func" onclick="appendOperator('(')">(</button>
+    <button class="func" onclick="appendOperator(')')">)</button>
+    <button class="func" colspan="2" style="grid-column: span 2;" onclick="backspace()">←</button>
 
-      <div id="num2Group">
-        <label for="num2">Second Number</label>
-        <input type="text" id="num2" name="num2" placeholder="e.g. 50" />
-      </div>
+    <!-- Row 2 -->
+    <button class="num" onclick="appendNumber('7')">7</button>
+    <button class="num" onclick="appendNumber('8')">8</button>
+    <button class="num" onclick="appendNumber('9')">9</button>
+     <button class="func" onclick="square()">x²</button>
+    <button class="func" onclick="factorial()">x!</button>
+    
 
-      <button type="submit">Calculate</button>
-    </form>
+    <!-- Row 3 -->
+    <button class="num" onclick="appendNumber('4')">4</button>
+    <button class="num" onclick="appendNumber('5')">5</button>
+    <button class="num" onclick="appendNumber('6')">6</button>
+    <button class="op" onclick="appendOperator('*')">×</button>
+    <button class="op" onclick="appendOperator('/')">÷</button>
+    
 
-    <div id="output" class="output" style="display:none"></div>
+    <!-- Row 4 -->
+    <button class="num" onclick="appendNumber('1')">1</button>
+    <button class="num" onclick="appendNumber('2')">2</button>
+    <button class="num" onclick="appendNumber('3')">3</button>
+    <button class="op" onclick="appendOperator('-')">−</button>
+    <button class="op" onclick="appendOperator('+')">+</button>
+
+    <!-- Row 5 -->
+    <button class="num zero" onclick="appendNumber('0')">0</button>
+    <button class="num" onclick="appendDecimal()">.</button>
+    <button class="eq" onclick="calculate()">=</button>
+
   </div>
 
-  <footer>
-    Powered by Go + math/big • Handles huge numbers with precision
-  </footer>
+  <div class="result" id="result"></div>
+</div>
 
-  <script>
-    // Тема
-    function toggleTheme() {
-      document.body.classList.toggle('dark-mode');
-      localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
-    }
-    // Восстановление темы
-    if (localStorage.getItem('theme') === 'dark') {
-      document.body.classList.add('dark-mode');
-    }
+<script>
+  let displayValue = '0';
+  const display = document.getElementById('display');
+  const resultDiv = document.getElementById('result');
 
-    // Скрыть/показать num2
-    document.getElementById("operator").addEventListener("change", function () {
-      const num2Group = document.getElementById("num2Group");
-      const op = this.value;
-      if (op === "!" || op === "sqrt") {
-        num2Group.style.display = "none";
+  function updateDisplay() {
+    display.textContent = displayValue;
+  }
+
+  function clearDisplay() {
+    displayValue = '0';
+    updateDisplay();
+    resultDiv.textContent = '';
+  }
+
+  function appendNumber(num) {
+    if (displayValue === '0') {
+      displayValue = num;
+    } else {
+      displayValue += num;
+    }
+    updateDisplay();
+  }
+
+  function appendDecimal() {
+    const parts = displayValue.split(/[\+\-\*\/\(\)]/);
+    const lastPart = parts[parts.length - 1];
+    if (!lastPart.includes('.')) {
+      displayValue += '.';
+      updateDisplay();
+    }
+  }
+
+  function appendOperator(op) {
+    const lastChar = displayValue.slice(-1);
+    if (['+', '-', '*', '/', '(', ')'].includes(lastChar) && op !== '(' && op !== ')') {
+      displayValue = displayValue.slice(0, -1) + op;
+    } else {
+      displayValue += op;
+    }
+    updateDisplay();
+  }
+
+  function backspace() {
+  if (displayValue.length === 1 || (displayValue.length === 2 && displayValue.startsWith('-'))) {
+    displayValue = '0';
+  } else {
+    displayValue = displayValue.slice(0, -1);
+  }
+  updateDisplay();
+  resultDiv.textContent = '';
+}
+
+  // x² — возведение в квадрат
+  function square() {
+    if (isSingleNumber(displayValue)) {
+      const num = parseFloat(eval(displayValue));
+      if (!isNaN(num)) {
+        const result = num * num;
+        displayValue = result.toString();
+        updateDisplay();
+        resultDiv.innerHTML = `<strong>= ${result}</strong>`;
+      }
+    } else {
+      displayValue = `(${displayValue})**2`;
+      updateDisplay();
+    }
+  }
+
+  // x! — факториал
+  function factorial() {
+    if (isSingleNumber(displayValue)) {
+      const n = parseInt(displayValue);
+      if (n >= 0 && n <= 170 && n === parseFloat(displayValue)) {
+        const fact = calculateFactorial(n);
+        displayValue = fact.toString();
+        updateDisplay();
+        resultDiv.innerHTML = `<strong>= ${fact}</strong>`;
       } else {
-        num2Group.style.display = "block";
+        resultDiv.innerHTML = `<span style="color: #ff9500">Ошибка: 0 ≤ n ≤ 170, целое</span>`;
       }
-    });
+    } else {
+      displayValue = `(${displayValue})!`;
+      updateDisplay();
+    }
+  }
 
-    // Обработка формы
-    document.getElementById("calcForm").addEventListener("submit", async (e) => {
+  function isSingleNumber(str) {
+    return /^-?\d+(\.\d+)?$/.test(str.trim()) && isFinite(str);
+  }
+
+  function calculateFactorial(n) {
+    if (n === 0 || n === 1) return 1;
+    let result = 1;
+    for (let i = 2; i <= n; i++) {
+      result *= i;
+    }
+    return result;
+  }
+
+  async function calculate() {
+    let expr = displayValue
+      .replace(/÷/g, '/')
+      .replace(/×/g, '*')
+      .replace(/\*\*/g, '**'); // оставляем как есть
+
+    if (!expr.trim()) return;
+
+    try {
+      const response = await fetch('/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(expr)
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        resultDiv.innerHTML = `<strong>= ${data.result}</strong>`;
+      } else {
+        resultDiv.innerHTML = `<span style="color: #ff3b30">Ошибка: ${data.error}</span>`;
+      }
+    } catch (err) {
+      resultDiv.innerHTML = `<span style="color: #ff3b30">Ошибка: ${err.message}</span>`;
+    }
+  }
+
+  // Клавиатурный ввод
+  document.addEventListener('keydown', e => {
+    if (/[0-9]/.test(e.key)) {
       e.preventDefault();
-      const form = e.target;
-      const data = new FormData(form);
-      const payload = Object.fromEntries(data.entries());
+      appendNumber(e.key);
+    } else if (['+', '-', '*', '/'].includes(e.key)) {
+      e.preventDefault();
+      appendOperator(e.key);
+    } else if (e.key === '.') {
+      e.preventDefault();
+      appendDecimal();
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      calculate();
+    } else if (e.key === 'Escape') {
+      clearDisplay();
+    } else if (e.key === '(' || e.key === ')') {
+      e.preventDefault();
+      appendOperator(e.key);
+    } else if (e.key === '^') {
+      e.preventDefault();
+      square();
+    } else if (e.key === '!') {
+      e.preventDefault();
+      factorial();
+    }
+  });
+</script>
 
-      if (payload.operator === "!" || payload.operator === "sqrt") {
-        delete payload.num2;
-      }
-
-      const outputDiv = document.getElementById("output");
-      outputDiv.style.display = "none";
-      outputDiv.classList.remove("error");
-
-      try {
-        const res = await fetch("/", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        });
-
-        const json = await res.json();
-
-        let message;
-        if (res.ok) {
-          message = "✅ " + json.result;
-        } else {
-          message = "❌ " + (json.error || "Unknown error");
-          outputDiv.classList.add("error");
-        }
-
-        outputDiv.textContent = message;
-        outputDiv.style.display = "block";
-      } catch (err) {
-        console.error("Fetch error:", err);
-        outputDiv.textContent = "🌐 Network error: Check connection";
-        outputDiv.classList.add("error");
-        outputDiv.style.display = "block";
-      }
-    });
-  </script>
 </body>
 </html>

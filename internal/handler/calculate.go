@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"calculator-go/internal/domain/model"
 	"math/big"
 	"net/http"
 	"strings"
@@ -10,7 +9,7 @@ import (
 )
 
 type calculatorServiceI interface {
-	Calculator(calc model.CalcInput) (*big.Float, error)
+	Evaluate(expr string) (*big.Float, error)
 }
 
 func (h *Handler) GetOperator(c *gin.Context) {
@@ -18,15 +17,15 @@ func (h *Handler) GetOperator(c *gin.Context) {
 }
 
 func (h *Handler) Operator(c *gin.Context) {
-	var input model.CalcInput
+	var expr string
 
-	err := c.BindJSON(&input)
+	err := c.BindJSON(&expr)
 	if err != nil {
 		c.Status(http.StatusBadRequest)
 		return
 	}
 
-	result, err := h.calculator.Calculator(input)
+	result, err := h.calculator.Evaluate(expr)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -40,14 +39,10 @@ func (h *Handler) Operator(c *gin.Context) {
 }
 
 func formatBigFloat(f *big.Float) string {
-	// Форматируем с 6 знаками после запятой
 	s := f.Text('f', 6)
 
-	// Если есть точка
 	if strings.Contains(s, ".") {
-		// Убираем хвостовые нули: 12.340000 → 12.34
 		s = strings.TrimRight(s, "0")
-		// Убираем точку, если стала последней: 12. → 12
 		s = strings.TrimRight(s, ".")
 	}
 
