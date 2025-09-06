@@ -76,7 +76,6 @@ func TestCalcService_Evaluate(t *testing.T) {
 			wantErr: false,
 		},
 
-		// --- Ошибочные случаи ---
 		{
 			name:       "division by zero",
 			args:       args{expr: "10 / 0"},
@@ -157,7 +156,6 @@ func TestCalcService_Evaluate(t *testing.T) {
 			require.NoError(t, err)
 			require.NotNil(t, result)
 
-			// Сравниваем с точностью
 			cmp := result.Cmp(tt.want)
 			assert.Zero(t, cmp, "expected %s, got %s", tt.want.Text('g', 10), result.Text('g', 10))
 		})
